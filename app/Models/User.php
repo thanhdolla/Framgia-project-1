@@ -69,6 +69,7 @@ class User extends Authenticatable
         if (Auth::user()->id == $id) {
             return true;
         }
+
         return false;
     }
 
@@ -77,8 +78,19 @@ class User extends Authenticatable
         return $query->where('name', 'ilike', '%' . $key . '%')->get()->toArray();
     }
 
-    public function scopeRemove($query, $id){
+    public function scopeRemove($query, $id)
+    {
         return $query->where('id', $id)->update(['remove' => 1]);
+    }
+
+    public function scopeManager($query, $request)
+    {
+        return $query->where('name', 'ilike', '%' . $request . '%')->where('level_id', '<>', '3');
+    }
+
+    public function scopeMember($query, $request)
+    {
+        return $query->where('name', 'like', '%' . $request . '%')->where('level_id', '3');
     }
 }
 

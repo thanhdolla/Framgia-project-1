@@ -111,15 +111,11 @@ class ContentController extends Controller
      */
     public function deleteNews($id)
     {
-        try {
-            $news = News::findOrFail($id);
+        $news = News::findOrFail($id);
 
-            $news->delete();
+        $news->delete();
 
-            return redirect()->route('news.index')->with('success', trans('common.with.delete_success'));
-        } catch (ModelNotFoundException $e) {
-            return view('admin.404');
-        }
+        return redirect()->route('news.index')->with('success', trans('common.with.delete_success'));
     }
 
     /**

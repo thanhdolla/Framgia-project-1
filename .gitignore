@@ -1,5 +1,9 @@
 /public/hot
 /public/storage
+/public/upload
+/public/source
+/node_modules
+/nodejs
 /storage/*.key
 /.idea
 /.vagrant

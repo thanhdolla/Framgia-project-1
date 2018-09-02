@@ -59,17 +59,13 @@ class AccountController extends Controller
      */
     public function editMember($id)
     {
-        try {
-            $user = User::findOrFail($id);
+        $user = User::findOrFail($id);
 
-            $level = Level::pluck('role', 'id');
+        $level = Level::pluck('role', 'id');
 
-            $local = Local::pluck('name', 'id');
+        $local = Local::pluck('name', 'id');
 
-            return view('admin/account/member/edit', compact('level', 'user', 'local'));
-        } catch (ModelNotFoundException $e) {
-            return view('admin.404');
-        }
+        return view('admin/account/member/edit', compact('level', 'user', 'local'));
     }
 
     /**
@@ -79,28 +75,24 @@ class AccountController extends Controller
      */
     public function postEditMember($id, UserRequest $request)
     {
-        try {
-            $user = User::findOrFail($id);
+        $user = User::findOrFail($id);
 
-            $pass_old = $user->password;
+        $pass_old = $user->password;
 
-            if ($request->password == $pass_old) {
-                $pass_new = $pass_old;
-            } else {
-                $pass_new = bcrypt($request->password);
-            }
-
-            $request->merge([
-                'password' => $pass_new,
-                'remove' => 0,
-            ]);
-
-            $user->update($request->all());
-
-            return redirect('admin/member/index')->with('success', trans('common.with.edit_success'));
-        } catch (ModelNotFoundException $e) {
-            return view('admin.404');
+        if ($request->password == $pass_old) {
+            $pass_new = $pass_old;
+        } else {
+            $pass_new = bcrypt($request->password);
         }
+
+        $request->merge([
+            'password' => $pass_new,
+            'remove' => 0,
+        ]);
+
+        $user->update($request->all());
+
+        return redirect('admin/member/index')->with('success', trans('common.with.edit_success'));
     }
 
     /**
@@ -143,7 +135,7 @@ class AccountController extends Controller
      */
     public function searchMember(Request $req)
     {
-        $members = User::where('name', 'like', '%' . $req->key . '%')->where('level_id', '3')->get();
+        $members = User::member($req->key)->get();
 
         return view('admin.account.member.index', compact('members'));
     }
@@ -164,6 +156,7 @@ class AccountController extends Controller
     public function addManager()
     {
         $level = Level::pluck('role', 'id');
+
         $local = Local::pluck('name', 'id');
 
         return view('admin.account.manager.add', compact('level', 'local'));
@@ -191,15 +184,13 @@ class AccountController extends Controller
      */
     public function editManager($id)
     {
-        try {
-            $user = User::findOrFail($id);
-            $level = Level::pluck('role', 'id');
-            $local = Local::pluck('name', 'id');
+        $user = User::findOrFail($id);
 
-            return view('admin/account/manager/edit', compact('level', 'user', 'local'));
-        } catch (ModelNotFoundException $e) {
-            return view('admin.404');
-        }
+        $level = Level::pluck('role', 'id');
+
+        $local = Local::pluck('name', 'id');
+
+        return view('admin/account/manager/edit', compact('level', 'user', 'local'));
     }
 
     /**
@@ -209,27 +200,24 @@ class AccountController extends Controller
      */
     public function postEditManager($id, UserRequest $request)
     {
-        try {
-            $user = User::findOrFail($id);
-            $pass_old = $user->password;
+        $user = User::findOrFail($id);
 
-            if ($request->password == $pass_old) {
-                $pass_new = $pass_old;
-            } else {
-                $pass_new = bcrypt($request->password);
-            }
+        $pass_old = $user->password;
 
-            $request->merge([
-                'password' => $pass_new,
-                'remove' => 0,
-            ]);
-
-            $user->update($request->all());
-
-            return redirect('admin/manager/index')->with('success', trans('common.with.edit_success'));
-        } catch (ModelNotFoundException $e) {
-            return view('admin.404');
+        if ($request->password == $pass_old) {
+            $pass_new = $pass_old;
+        } else {
+            $pass_new = bcrypt($request->password);
         }
+
+        $request->merge([
+            'password' => $pass_new,
+            'remove' => 0,
+        ]);
+
+        $user->update($request->all());
+
+        return redirect('admin/manager/index')->with('success', trans('common.with.edit_success'));
     }
 
     /**
@@ -242,6 +230,7 @@ class AccountController extends Controller
             if (auth()->user()->id == $id) {
                 return back()->with('message', trans('common.with.delete_error'));
             }
+
             User::remove($id);
 
             return redirect('admin/manager/index')->with('success', trans('common.with.delete_success'));
@@ -256,7 +245,7 @@ class AccountController extends Controller
      */
     public function searchManager(Request $req)
     {
-        $managers = User::where('name', 'like', '%' . $req->key . '%')->where('level_id', '<>', '3')->get();
+        $managers = User::manager($req->key)->get();
 
         return view('admin.account.manager.index', compact('managers'));
     }
