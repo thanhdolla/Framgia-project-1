@@ -117,7 +117,7 @@ class Product extends Model
 
     public function scopeViews($query)
     {
-        return $query->where('remove', 0)
+        return $query->where('remove', config('page.product.remove.active'))
             ->orderBy('created_at', 'DESC')
             ->where('status', config('page.product.status.inactive'))
             ->take(config('app.paginateProduct'))->get();
